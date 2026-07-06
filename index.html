@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoLead AI - Captación Inteligente para Programadores</title>
+    <!-- CSS Estilos -->
+    <link rel="stylesheet" href="style.css">
+    <!-- PWA Manifest & Meta Tags -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#7c3aed">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="AutoLead AI">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+    <!-- Lucide Icons para iconos modernos -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Canvas Confetti para la animación de éxito TDAH -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- HEADER -->
+        <header>
+            <div class="logo-section">
+                <h1><i data-lucide="zap"></i> AutoLead AI</h1>
+                <p>Automatizando tu captación, paso a paso y sin agobios</p>
+            </div>
+            
+            <div class="header-actions">
+                <button id="installAppBtn" class="action-btn secondary-btn" style="display: none; padding: 6px 12px; font-size: 12px; font-weight: 600; border-radius: var(--radius-sm); margin-right: 4px;" onclick="installApp()">
+                    <i data-lucide="download" style="width: 14px; height: 14px;"></i> Descargar App
+                </button>
+                <div class="api-status">
+                    <div id="statusDot" class="status-dot"></div>
+                    <span id="statusText">Gemini desconectada</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- NAVIGATION TABS -->
+        <nav class="nav-tabs">
+            <button class="tab-btn active" onclick="switchView('dashboard')">
+                <i data-lucide="layout-dashboard"></i> Panel
+            </button>
+            <button class="tab-btn" onclick="switchView('search')">
+                <i data-lucide="search"></i> Buscar Leads
+            </button>
+            <button class="tab-btn" onclick="switchView('crm')">
+                <i data-lucide="kanban"></i> CRM Kanban
+            </button>
+            <button class="tab-btn" onclick="switchView('settings')">
+                <i data-lucide="settings"></i> Ajustes
+            </button>
+        </nav>
+
+        <!-- MAIN VIEWS -->
+        <main class="view-content">
+            
+            <!-- VIEW: DASHBOARD (PANEL + ADHD COACH) -->
+            <div id="view-dashboard" class="view-pane active">
+                <div class="dashboard-grid">
+                    <!-- Estadísticas -->
+                    <div>
+                        <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 16px; color: var(--text-main);">Tu Embudo Comercial</h2>
+                        <div class="dashboard-stats">
+                            <div class="stat-card">
+                                <div class="stat-label">Total Leads</div>
+                                <div id="statTotalLeads" class="stat-val">0</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-label">Contactados</div>
+                                <div id="statContacted" class="stat-val">0</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-label">Interesados</div>
+                                <div id="statInterested" class="stat-val">0</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-label">Tasa de Respuesta</div>
+                                <div id="statConversion" class="stat-val">0%</div>
+                            </div>
+                        </div>
+                        <div class="glass-card" style="padding: 20px;">
+                            <h3 style="font-size: 16px; margin-bottom: 12px;"><i data-lucide="sparkles" style="color: var(--color-info); vertical-align: middle; margin-right: 6px;"></i> ¿Por qué automatizar?</h3>
+                            <p style="font-size: 13.5px; color: var(--text-muted); line-height: 1.5;">Las mejores automatizaciones nacen de procesos manuales diarios. Busca tareas como subidas de vídeo repetitivas, envío manual de reportes de métricas, o emails recurrentes. ¡Esos son tus clientes de oro!</p>
+                        </div>
+                    </div>
+
+                    <!-- Coach TDAH (Momentum Coach) -->
+                    <div class="glass-card coach-card">
+                        <div class="coach-header">
+                            <div class="coach-avatar">🧠</div>
+                            <h2>Asistente de Enfoque (TDAH)</h2>
+                        </div>
+                        
+                        <!-- Estado por defecto: Elegir micro-tarea -->
+                        <div id="coachSelectMode">
+                            <div class="coach-balloon">
+                                ¡Hola! Sé que ponerse a buscar clientes puede abrumar. Vamos a hacerlo muy fácil: **elige una sola micro-tarea de las 2 opciones de abajo**. Solo te llevará unos minutos y te ayudará a arrancar. ¿Cuál prefieres?
+                            </div>
+                            <div class="coach-options">
+                                <button class="coach-opt-btn" onclick="startMicrotask(1)">
+                                    <span id="opt1Text">Búsqueda rápida de clientes del sector audiovisual</span>
+                                    <i class="coach-opt-icon" data-lucide="arrow-right"></i>
+                                </button>
+                                <button class="coach-opt-btn" onclick="startMicrotask(2)">
+                                    <span id="opt2Text">Revisar el primer lead sin contactar del CRM</span>
+                                    <i class="coach-opt-icon" data-lucide="arrow-right"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Estado activo: Ejecutando la micro-tarea -->
+                        <div id="coachActiveMode" style="display: none;">
+                            <div class="active-task-container">
+                                <div class="active-task-box">
+                                    <div class="active-task-title">Tarea en curso:</div>
+                                    <div id="activeTaskDescription" class="active-task-desc">Cargando tarea...</div>
+                                    <button class="action-btn" onclick="completeMicrotask()" style="margin: 0 auto; padding: 10px 20px;">
+                                        <i data-lucide="check-circle"></i> ¡Completada!
+                                    </button>
+                                </div>
+                                <button class="tab-btn secondary-btn" onclick="cancelMicrotask()" style="justify-content: center;">
+                                    Volver atrás
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Estado Momentum: Éxito e Inercia -->
+                        <div id="coachMomentumMode" style="display: none;">
+                            <div class="coach-balloon" style="border-color: var(--color-success);">
+                                <strong>🎉 ¡Increíble! ¡Logrado!</strong> Tu cerebro acaba de recibir un buen chute de dopamina por terminar una tarea. 
+                                <br><br>
+                                Si te sientes motivado/a para seguir con este impulso positivo, dale a **"Seguir con la inercia"** para elegir otra micro-tarea. Si prefieres dejarlo por hoy, ¡has hecho un gran trabajo!
+                            </div>
+                            <div class="momentum-choices">
+                                <button class="action-btn" onclick="keepMomentum()">
+                                    <i data-lucide="flame"></i> Seguir con la inercia
+                                </button>
+                                <button class="action-btn secondary-btn" onclick="stopMomentum()">
+                                    Terminar por hoy
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW: SEARCH (BUSCADOR DE LEADS) -->
+            <div id="view-search" class="view-pane">
+                <div class="glass-card">
+                    <h2 style="font-size: 20px; font-weight: 800; margin-bottom: 8px;">Encontrar Clientes con IA</h2>
+                    <p style="font-size: 13.5px; color: var(--text-muted); margin-bottom: 24px;">La IA buscará e identificará empresas reales de tu región o del nicho que le indiques, clasificándolas según su nivel de necesidad tecnológica.</p>
+                    
+                    <div class="search-bar-row">
+                        <input type="text" id="searchNiche" class="search-input" placeholder="Ej: Productoras de video, Clínicas dentales, Inmobiliarias...">
+                        <input type="text" id="searchLocation" class="search-input" style="max-width: 250px;" placeholder="Localización (ej: Málaga)">
+                        <button id="searchBtn" class="action-btn" onclick="searchLeads()">
+                            <i data-lucide="search"></i> Buscar Leads
+                        </button>
+                    </div>
+
+                    <!-- Loader -->
+                    <div id="searchLoader" class="loading-container" style="display: none;">
+                        <div class="spinner"></div>
+                        <div class="loading-text">Gemini está analizando el mercado local...</div>
+                    </div>
+
+                    <!-- Resultados -->
+                    <div id="searchResults" class="leads-grid">
+                        <div class="empty-state">
+                            <div class="empty-state-icon">🔍</div>
+                            <div class="empty-state-text">Escribe un sector y región arriba para buscar clientes ideales.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW: PROPOSAL (DETALLES Y PROPUESTAS GENERADAS) -->
+            <div id="view-proposal" class="view-pane">
+                <div class="glass-card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--border-card); padding-bottom: 16px;">
+                        <div>
+                            <span id="proposalLeadBadge" class="lead-badge iniciacion">Cargando...</span>
+                            <h2 id="proposalLeadName" style="font-size: 24px; font-weight: 800; margin-top: 6px;">Nombre de la Empresa</h2>
+                            <p id="proposalLeadUrl" style="font-size: 13px; color: var(--text-muted);"><i data-lucide="external-link" style="width:14px; vertical-align: middle;"></i> <a href="#" target="_blank">visitar web</a></p>
+                        </div>
+                        <button class="action-btn secondary-btn" onclick="backToSearch()">
+                            <i data-lucide="arrow-left"></i> Volver a Búsqueda
+                        </button>
+                    </div>
+
+                    <!-- Loader de Análisis -->
+                    <div id="proposalLoader" class="loading-container" style="display: none;">
+                        <div class="spinner"></div>
+                        <div class="loading-text">La IA está diseñando las automatizaciones perfectas y redactando el email...</div>
+                    </div>
+
+                    <!-- Contenedor del análisis generado -->
+                    <div id="proposalContent" class="proposal-layout" style="display: none;">
+                        <!-- Columna izquierda: Ideas de Automatización -->
+                        <div>
+                            <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 16px;"><i data-lucide="lightbulb" style="color: var(--color-warning);"></i> Propuestas de Automatización</h3>
+                            <div id="proposalIdeasContainer">
+                                <!-- Las 3 ideas se renderizarán aquí -->
+                            </div>
+                        </div>
+
+                        <!-- Columna derecha: Correo de contacto -->
+                        <div>
+                            <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 16px;"><i data-lucide="mail" style="color: var(--color-primary);"></i> Primer Correo de Contacto</h3>
+                            <div class="proposal-email-box">
+                                <textarea id="proposalEmailText" class="email-textarea"></textarea>
+                                <div class="proposal-email-actions">
+                                    <button class="action-btn secondary-btn" onclick="copyProposalEmail()">
+                                        <i data-lucide="copy"></i> Copiar Texto
+                                    </button>
+                                    <button class="action-btn" onclick="saveToCRMAndMarkContacted()">
+                                        <i data-lucide="send"></i> Guardar y Marcar Contactado
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW: CRM KANBAN -->
+            <div id="view-crm" class="view-pane">
+                <div class="glass-card" style="margin-bottom: 24px; padding: 16px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <h2 style="font-size: 18px; font-weight: 800;">Embudo de Clientes (CRM)</h2>
+                            <p style="font-size: 13px; color: var(--text-muted);">Organiza tus oportunidades y haz seguimiento visual de tus contactos.</p>
+                        </div>
+                        <button class="action-btn secondary-btn" onclick="clearCRMData()" style="padding: 8px 16px; font-size: 13px;">
+                            <i data-lucide="trash-2"></i> Limpiar CRM
+                        </button>
+                    </div>
+                </div>
+
+                <div class="kanban-board">
+                    <!-- Columna: Para Contactar -->
+                    <div class="kanban-column" id="col-todo">
+                        <div class="column-header">
+                            <span class="column-title"><i data-lucide="user-plus" style="color: var(--color-warning);"></i> Por Contactar</span>
+                            <span class="column-count" id="count-todo">0</span>
+                        </div>
+                        <div class="kanban-cards-container" id="cards-todo" style="display:flex; flex-direction:column; gap:12px;">
+                            <!-- Tarjetas aquí -->
+                        </div>
+                    </div>
+
+                    <!-- Columna: Contactados -->
+                    <div class="kanban-column" id="col-contacted">
+                        <div class="column-header">
+                            <span class="column-title"><i data-lucide="mail-check" style="color: var(--color-primary);"></i> Contactado</span>
+                            <span class="column-count" id="count-contacted">0</span>
+                        </div>
+                        <div class="kanban-cards-container" id="cards-contacted" style="display:flex; flex-direction:column; gap:12px;">
+                            <!-- Tarjetas aquí -->
+                        </div>
+                    </div>
+
+                    <!-- Columna: Interesados -->
+                    <div class="kanban-column" id="col-interested">
+                        <div class="column-header">
+                            <span class="column-title"><i data-lucide="message-square" style="color: var(--color-success);"></i> Interesados / Citas</span>
+                            <span class="column-count" id="count-interested">0</span>
+                        </div>
+                        <div class="kanban-cards-container" id="cards-interested" style="display:flex; flex-direction:column; gap:12px;">
+                            <!-- Tarjetas aquí -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW: CONFIGURACIÓN -->
+            <div id="view-settings" class="view-pane">
+                <div class="glass-card">
+                    <h2 style="font-size: 20px; font-weight: 800; margin-bottom: 8px;">Configuración de la App</h2>
+                    <p style="font-size: 13.5px; color: var(--text-muted); margin-bottom: 24px;">Configura tu API Key de Gemini para activar las capacidades de Inteligencia Artificial.</p>
+                    
+                    <div class="settings-form">
+                        <div class="form-group">
+                            <label for="apiKeyInput">Google Gemini API Key</label>
+                            <div style="display: flex; gap: 8px;">
+                                <input type="password" id="apiKeyInput" class="search-input" placeholder="AIzaSy...">
+                                <button class="action-btn secondary-btn" onclick="toggleApiKeyVisibility()" style="padding: 14px;">
+                                    <i id="toggleApiIcon" data-lucide="eye"></i>
+                                </button>
+                            </div>
+                            <div class="form-help">
+                                Las claves de API de Gemini son gratuitas para desarrollo. Consigue una en Google AI Studio haciendo click <a href="https://aistudio.google.com/" target="_blank">aquí</a> e iniciando sesión con tu cuenta de Google.
+                            </div>
+                        </div>
+
+                        <button class="action-btn" onclick="saveApiKey()">
+                            <i data-lucide="save"></i> Guardar Ajustes
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- JS Aplicación -->
+    <script src="app.js"></script>
+    <script>
+        // Inicializar iconos de Lucide al cargar
+        lucide.createIcons();
+    </script>
+</body>
+</html>
