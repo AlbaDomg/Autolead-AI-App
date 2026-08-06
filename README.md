@@ -1,41 +1,37 @@
 # 🤖 AI Lead Intelligence Platform
 
-> Helping software companies discover new business opportunities through Artificial Intelligence.
-
+> AI-powered internal platform developed to automate lead discovery and business analysis for AtmanSys.
 ![Status](https://img.shields.io/badge/Status-In_Development-blue?style=for-the-badge)
-![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
-![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)
-![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)
-![Prisma](https://img.shields.io/badge/Prisma-2D3748?style=for-the-badge&logo=prisma&logoColor=white)
-![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)
+![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
+![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
 ![Google Gemini](https://img.shields.io/badge/Google_Gemini-4285F4?style=for-the-badge&logo=google&logoColor=white)
+![PWA](https://img.shields.io/badge/PWA-5A0FC8?style=for-the-badge&logo=pwa&logoColor=white)
+![Service Worker](https://img.shields.io/badge/Service_Workers-FF6F00?style=for-the-badge)
+![Vercel](https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)
 
 ---
 
 # 📖 Overview
 
-AI Lead Intelligence Platform is an AI-powered SaaS application designed to automate the process of discovering, analyzing and qualifying potential clients for software development and automation services.
+AtmanSys Lead Intelligence is an internal AI-powered application developed to support business development for AtmanSys.
 
-Instead of manually researching businesses, evaluating opportunities and writing personalized outreach messages, the platform leverages Google's Gemini AI to generate qualified leads, identify operational bottlenecks and recommend tailored software solutions.
+The project was created to automate one of the most time-consuming parts of running a software business: finding potential clients, understanding their needs and preparing personalized commercial proposals.
 
-The application also includes a built-in CRM, allowing users to manage both AI-generated and manually created leads from a single interface.
+Instead of manually researching companies, the platform leverages Google's Gemini AI to generate business prospects, analyze possible operational bottlenecks and suggest software solutions that could provide value.
+
+Although originally built as an internal tool, the architecture was designed as a scalable SaaS application.
 
 ---
 
+
 # 🎯 The Problem
 
-Finding high-quality business opportunities is often a repetitive and time-consuming process.
+As the founder of AtmanSys, identifying potential clients manually quickly became repetitive and inefficient.
 
-Sales teams typically need to:
+Researching businesses, understanding their challenges and writing personalized proposals required a significant amount of time before even making first contact.
 
-- Search for potential companies manually.
-- Research each business individually.
-- Identify operational challenges.
-- Determine whether automation could provide value.
-- Write personalized commercial proposals.
-- Organize leads in spreadsheets or CRM systems.
-
-Repeating this process for dozens or hundreds of companies quickly becomes inefficient.
+I wanted to automate this process using Artificial Intelligence while keeping full control over the generated leads through an integrated CRM.
 
 ---
 
@@ -84,17 +80,22 @@ Users can also manually create, edit and manage leads through the built-in CRM, 
 
 ## Frontend
 
-- React
-- Next.js
+- HTML5
+- CSS3
+- JavaScript (ES6+)
 
-## Backend
+## Artificial Intelligence
 
-- Node.js
+- Google Gemini API (Gemini 2.5 Flash)
 
-## Database
+## Progressive Web App
 
-- Prisma ORM
-- Supabase
+- Progressive Web App (PWA)
+- Service Workers
+
+## Deployment
+
+- Vercel
 
 ## Artificial Intelligence
 
@@ -157,4 +158,4 @@ Full Stack Developer
 
 > **Note**
 >
-> This project is currently under active development and serves as one of the core AI products within the AtmanSys ecosystem, focused on helping software companies identify new business opportunities through Artificial Intelligence.
+> This project is currently under active development and serves as one of the core AI products within the AtmanSys ecosystem.
