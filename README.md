@@ -120,7 +120,6 @@ Some of the main technical challenges during development included:
 
 Developing this project strengthened my experience in:
 
-- Prompt engineering.
 - AI-assisted business analysis.
 - Building AI-powered SaaS applications.
 - CRM-oriented application design.
