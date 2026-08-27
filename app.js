@@ -877,52 +877,34 @@ function setupADHDCoach() {
     activeMode.style.display = 'none';
     momentumMode.style.display = 'none';
 
-    // Generar dinámicamente las 2 opciones basadas en el estado
+    // Generar dinámicamente las 2 opciones basadas en el estado del CRM
     let opt1, opt2;
 
-    if (!state.apiKey) {
-        // Opción prioritaria: Configurar API Key
+    const todoLeads = state.leads.filter(l => l.status === 'todo');
+    const contactedLeads = state.leads.filter(l => l.status === 'contacted');
+
+    if (todoLeads.length > 0) {
+        const firstLead = todoLeads[0];
         opt1 = {
-            id: 'configure_api',
-            text: '🔑 Configurar tu API Key de Gemini en la pestaña de Ajustes (1 min)',
-            description: 'Vete a Ajustes y pega tu clave para poder usar la búsqueda por IA.',
-            action: () => switchView('settings')
+            id: `contact_lead_${firstLead.id}`,
+            text: `✉️ Revisar mensaje consultivo para "${firstLead.name}" (2 min)`,
+            description: `Abre los detalles de ${firstLead.name}, revisa el mensaje de enfoque consultivo personalizado por la IA y cópialo para su envío. ¡Es solo 1 minuto!`,
+            action: () => viewSavedLeadProposal(firstLead.id)
         };
-        opt2 = defaultMicrotasks[0]; // Buscar clínicas
-    } 
-    else if (state.leads.length === 0) {
-        // No hay leads en el CRM
-        opt1 = defaultMicrotasks[0];
-        opt2 = defaultMicrotasks[1];
-    } 
-    else {
-        // Hay leads en el CRM
-        const todoLeads = state.leads.filter(l => l.status === 'todo');
-        const contactedLeads = state.leads.filter(l => l.status === 'contacted');
+    } else {
+        opt1 = defaultMicrotasks[0]; // Buscar clínicas de salud y estética
+    }
 
-        if (todoLeads.length > 0) {
-            const firstLead = todoLeads[0];
-            opt1 = {
-                id: `contact_lead_${firstLead.id}`,
-                text: `✉️ Enviar correo inicial a "${firstLead.name}" (2 min)`,
-                description: `Abre los detalles de ${firstLead.name}, revisa o adapta el correo que la IA te redactó, cópialo y envíaselo por correo o formulario de contacto. ¡Es solo un email!`,
-                action: () => viewSavedLeadProposal(firstLead.id)
-            };
-        } else {
-            opt1 = defaultMicrotasks[0]; // Buscar un nicho
-        }
-
-        if (contactedLeads.length > 0) {
-            const firstContacted = contactedLeads[0];
-            opt2 = {
-                id: `check_reply_${firstContacted.id}`,
-                text: `💬 Comprobar si respondió "${firstContacted.name}" (1 min)`,
-                description: `Entra a tu bandeja de entrada y revisa si has recibido respuesta. Si te ha respondido interesado/a, ¡mueve su tarjeta a la columna de Interesados!`,
-                action: () => switchView('crm')
-            };
-        } else {
-            opt2 = defaultMicrotasks[1]; // Buscar inspiración
-        }
+    if (contactedLeads.length > 0) {
+        const firstContacted = contactedLeads[0];
+        opt2 = {
+            id: `check_reply_${firstContacted.id}`,
+            text: `💬 Comprobar si respondió "${firstContacted.name}" (1 min)`,
+            description: `Entra a tu bandeja de entrada o WhatsApp y revisa si has recibido respuesta. Si te ha respondido interesado/a, ¡mueve su tarjeta a la columna de Interesados!`,
+            action: () => switchView('crm')
+        };
+    } else {
+        opt2 = defaultMicrotasks[1]; // Buscar clínicas capilares
     }
 
     // Guardar opciones activas en variables de objeto temporales
