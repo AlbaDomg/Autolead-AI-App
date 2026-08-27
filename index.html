@@ -150,12 +150,29 @@
             <!-- VIEW: SEARCH (BUSCADOR DE LEADS) -->
             <div id="view-search" class="view-pane">
                 <div class="glass-card">
-                    <h2 style="font-size: 20px; font-weight: 800; margin-bottom: 8px;">Encontrar Clientes con IA</h2>
-                    <p style="font-size: 13.5px; color: var(--text-muted); margin-bottom: 24px;">La IA buscará e identificará empresas reales de tu región o del nicho que le indiques, clasificándolas según su nivel de necesidad tecnológica.</p>
+                    <h2 style="font-size: 20px; font-weight: 800; margin-bottom: 8px;">🏥 Encontrar y Cualificar Clientes de Alto Ticket</h2>
+                    <p style="font-size: 13.5px; color: var(--text-muted); margin-bottom: 16px;">Sistema optimizado para detectar clínicas privadas de salud, estética, implantología y salud capilar con scoring de intención de compra (marketing activo, tamaño de equipo y WhatsApp directos).</p>
                     
+                    <!-- Presets rápidos para clínicas de salud y estética -->
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px;">
+                        <span style="font-size: 12px; color: var(--text-muted); align-self: center; font-weight: 600;">Plantillas Rápidas:</span>
+                        <button class="action-btn secondary-btn" style="padding: 6px 12px; font-size: 12px;" onclick="applyPreset('Clínicas de Salud y Estética (Alto Ticket)', 'España (Priorizando Málaga)')">
+                            🏥 Salud & Estética (España - Prioridad Málaga)
+                        </button>
+                        <button class="action-btn secondary-btn" style="padding: 6px 12px; font-size: 12px;" onclick="applyPreset('Clínicas Dentales (Implantología y Ortodoncia Invisible)', 'España (Priorizando Málaga)')">
+                            🦷 Implantología & Ortodoncia
+                        </button>
+                        <button class="action-btn secondary-btn" style="padding: 6px 12px; font-size: 12px;" onclick="applyPreset('Clínicas de Injerto y Salud Capilar FUE', 'España (Priorizando Málaga)')">
+                            💇‍♂️ Injerto Capilar FUE
+                        </button>
+                        <button class="action-btn secondary-btn" style="padding: 6px 12px; font-size: 12px;" onclick="applyPreset('Clínicas de Medicina Estética y Cirugía Plástica', 'España (Priorizando Málaga)')">
+                            💉 Medicina Estética & Cirugía
+                        </button>
+                    </div>
+
                     <div class="search-bar-row">
-                        <input type="text" id="searchNiche" class="search-input" placeholder="Ej: Productoras de video, Clínicas dentales, Inmobiliarias...">
-                        <input type="text" id="searchLocation" class="search-input" style="max-width: 250px;" placeholder="Localización (ej: Málaga)">
+                        <input type="text" id="searchNiche" class="search-input" placeholder="Ej: Clínicas dentales, Medicina estética, Injerto capilar...">
+                        <input type="text" id="searchLocation" class="search-input" style="max-width: 280px;" placeholder="España (Prioridad: Málaga)">
                         <button id="searchBtn" class="action-btn" onclick="searchLeads()">
                             <i data-lucide="search"></i> Buscar Leads
                         </button>
@@ -164,14 +181,14 @@
                     <!-- Loader -->
                     <div id="searchLoader" class="loading-container" style="display: none;">
                         <div class="spinner"></div>
-                        <div class="loading-text">Gemini está analizando el mercado local...</div>
+                        <div class="loading-text">Gemini está analizando el mercado y cualificando prospectos decisores...</div>
                     </div>
 
                     <!-- Resultados -->
                     <div id="searchResults" class="leads-grid">
                         <div class="empty-state">
                             <div class="empty-state-icon">🔍</div>
-                            <div class="empty-state-text">Escribe un sector y región arriba para buscar clientes ideales.</div>
+                            <div class="empty-state-text">Selecciona una plantilla rápida o introduce un sector para buscar y cualificar prospectos.</div>
                         </div>
                     </div>
                 </div>
@@ -209,7 +226,7 @@
 
                         <!-- Columna derecha: Correo de contacto -->
                         <div>
-                            <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 16px;"><i data-lucide="mail" style="color: var(--color-primary);"></i> Primer Correo de Contacto</h3>
+                            <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 16px;"><i data-lucide="mail" style="color: var(--color-primary);"></i> Mensaje Consultivo (Auditoría & Valor)</h3>
                             <div class="proposal-email-box">
                                 <textarea id="proposalEmailText" class="email-textarea"></textarea>
                                 <div class="proposal-email-actions">

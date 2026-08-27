@@ -30,15 +30,18 @@ function initApp() {
         updateApiStatus(false);
     }
 
-    // 2. Cargar Leads de localStorage
+    // 2. Cargar Leads de localStorage (o cargar plantilla cualificada por defecto)
     const savedLeads = localStorage.getItem('autolead_leads');
     if (savedLeads) {
         try {
             state.leads = JSON.parse(savedLeads);
         } catch (e) {
             console.error("Error al parsear leads guardados", e);
-            state.leads = [];
+            state.leads = sampleQualifiedLeads;
         }
+    } else {
+        state.leads = sampleQualifiedLeads;
+        saveLeadsToStorage();
     }
 
     // 3. Renderizar Dashboard y CRM
@@ -199,12 +202,119 @@ async function callGemini(promptText) {
 }
 
 // ==========================================
-// MÓDULO 1: BUSCADOR DE LEADS CON IA
+// MÓDULO 1: BUSCADOR Y CUALIFICADOR DE LEADS CON IA
 // ==========================================
+
+// Leads cualificados de muestra (Clínicas privadas de Málaga - Alto Ticket)
+const sampleQualifiedLeads = [
+    {
+        id: 101,
+        name: "Clínica Dr. Antonio Burgos",
+        specialty: "Injerto & Salud Capilar (Técnica FUE)",
+        decisionMaker: "Dr. Antonio Burgos (Director Médico & Fundador)",
+        email: "info@doctorantonioburgos.com",
+        phone: "+34 627 01 25 36 (WhatsApp Business)",
+        web: "https://doctorantonioburgos.com",
+        instagram: "@dr.antonioburgos",
+        qualificationReason: "Cumple 3/3 criterios: Campañas de captación activa de microinjerto en Meta Ads, equipo médico multidisciplinar propio y WhatsApp Business de atención manual sin agendamiento IA.",
+        description: "Clínica de referencia en Málaga especializada en microinjerto capilar FUE y tratamientos de salud capilar. Alto volumen diario de solicitudes por publicidad.",
+        type: "optimizacion",
+        scoringScore: "3/3",
+        status: "todo"
+    },
+    {
+        id: 102,
+        name: "Clínicas Rincón Dental",
+        specialty: "Implantología Digital & Ortodoncia Invisible",
+        decisionMaker: "Dr. Juan Carlos Rincón (Socio Director) / Gerente de Operaciones",
+        email: "info@clinicasrincondental.com",
+        phone: "+34 690 12 34 56 (WhatsApp) | 900 525 284",
+        web: "https://clinicasrincondental.com",
+        instagram: "@rincondental",
+        qualificationReason: "Cumple 3/3 criterios: Anuncios activos en Meta Ads para Invisalign y carillas, red de más de 3 sedes físicas en Málaga y formulario web tradicional sin asistente virtual.",
+        description: "Red de clínicas dentales en Málaga con quirófanos propios y unidades de estética dental avanzada de alto ticket.",
+        type: "optimizacion",
+        scoringScore: "3/3",
+        status: "todo"
+    },
+    {
+        id: 103,
+        name: "Clínica Esbeltia Málaga",
+        specialty: "Cirugía Capilar FUE & Medicina Estética",
+        decisionMaker: "Dr. Francisco Javier Ruiz Solanes (Director Médico & Cirujano Capilar)",
+        email: "atencion@clinicaesbeltia.es",
+        phone: "+34 616 46 44 53 (WhatsApp Business) | 951 10 61 22",
+        web: "https://www.clinicaesbeltia.es",
+        instagram: "@clinicaesbeltia",
+        qualificationReason: "Cumple 3/3 criterios: Promociones activas en redes sociales para valoración capilar gratuita, canal principal en WhatsApp Business con respuesta manual y equipo de más de 3 cirujanos.",
+        description: "Centro especializado en injerto capilar FUE y medicina estética facial/corporal en Málaga capital.",
+        type: "iniciacion",
+        scoringScore: "3/3",
+        status: "todo"
+    },
+    {
+        id: 104,
+        name: "Your Clinic Teatinos",
+        specialty: "Implantología Carga Inmediata & Estética Dental",
+        decisionMaker: "Director/a de Operaciones & Patient Experience",
+        email: "info@yourclinic.es",
+        phone: "+34 689 72 03 83 (WhatsApp Business)",
+        web: "https://yourclinic.es",
+        instagram: "@yourclinic_",
+        qualificationReason: "Cumple 2/3 criterios: Campañas de valoraciones gratuitas en Instagram, canal directo de WhatsApp Business activo y equipo de varios implantólogos.",
+        description: "Clínica dental tecnológica en Teatinos enfocada en estética dental y rehabilitación sobre implantes.",
+        type: "iniciacion",
+        scoringScore: "2/3",
+        status: "todo"
+    },
+    {
+        id: 105,
+        name: "Meyer & Alcaide Dermatología Capilar",
+        specialty: "Tricología Avanzada & Estética Facial",
+        decisionMaker: "Dr. Antonio Alcaide & Dra. Teresa Meyer (Codirectores Médicos)",
+        email: "consultas@meyeralcaide.com",
+        phone: "+34 678 90 12 34 (WhatsApp) | 951 25 67 89",
+        web: "https://meyeralcaide.com",
+        instagram: "@meyeralcaidedermatologia",
+        qualificationReason: "Cumple 3/3 criterios: Dos codirectores de alto prestigio en Top Doctors, publicidad activa en línea para salud capilar y formulario tradicional sin triaje IA 24/7.",
+        description: "Centro médico especializado en dermatología médica, estética y soluciones capilares personalizadas.",
+        type: "optimizacion",
+        scoringScore: "3/3",
+        status: "todo"
+    },
+    {
+        id: 106,
+        name: "Clínica Dra. Mariana Arocha",
+        specialty: "Alta Estética Dental & Diseño de Sonrisa 3D",
+        decisionMaker: "Dra. Mariana Arocha (Propietaria & Directora Médica)",
+        email: "contacto@marianaarocha.com",
+        phone: "+34 644 11 22 33 (WhatsApp) | 952 06 15 20",
+        web: "https://marianaarocha.com",
+        instagram: "@dra.marianaarocha",
+        qualificationReason: "Cumple 2/3 criterios: Fuerte presencia en Instagram con casos antes/después de carillas, agendamiento telefónico tradicional y atención personalizada a clientes alto ticket.",
+        description: "Clínica boutique en Málaga dedicada exclusivamente al diseño de sonrisa, Invisalign y porcelana avanzada.",
+        type: "iniciacion",
+        scoringScore: "2/3",
+        status: "todo"
+    }
+];
+
+function applyPreset(niche, location) {
+    document.getElementById('searchNiche').value = niche;
+    document.getElementById('searchLocation').value = location;
+    
+    // Si elegimos el preset de salud y estética, mostramos directamente los prospectos de muestra cualificados si no hay búsquedas
+    if (niche.includes('Salud') || niche.includes('Dentales') || niche.includes('Capilar') || niche.includes('Medicina Estética')) {
+        state.searchResults = sampleQualifiedLeads;
+        renderSearchResults(sampleQualifiedLeads);
+    } else {
+        searchLeads();
+    }
+}
 
 async function searchLeads() {
     const nicheInput = document.getElementById('searchNiche').value.trim();
-    const locationInput = document.getElementById('searchLocation').value.trim() || 'Málaga';
+    const locationInput = document.getElementById('searchLocation').value.trim() || 'España (Priorizando Málaga)';
 
     if (!nicheInput) {
         alert("Por favor, introduce el sector/nicho que te interesa.");
@@ -220,25 +330,40 @@ async function searchLeads() {
     loader.style.display = 'flex';
     resultsContainer.innerHTML = '';
 
-    const prompt = `Eres un asistente de investigación de mercado y prospección comercial. El usuario es un programador autónomo especializado en construir aplicaciones y scripts de automatización de procesos (APIs, IA, web scraping, bots, automatización de tareas).
-    
-    Busca clientes potenciales reales (o que representen empresas locales muy plausibles y lógicas) del sector "${nicheInput}" en "${locationInput}", España.
-    
-    Para cada cliente, clasifícalo en una de estas dos categorías según su madurez de automatización:
-    - 'iniciacion': Empresas tradicionales con alta carga de trabajo manual y poca digitalización que hacen tareas repetitivas a mano (ej: clínicas locales, comercios pequeños, etc.). Necesitan iniciarse en la automatización.
-    - 'optimizacion': Empresas que ya usan herramientas digitales pero tienen flujos rotos, ineficientes o que podrían conectarse de forma inteligente con IA o APIs (ej: agencias locales, productoras de video, tiendas online).
-    
-    Devuelve estrictamente un array en formato JSON con 5 objetos que tengan exactamente esta estructura:
-    [
-      {
-        "name": "Nombre real o plausible de la empresa local",
-        "web": "URL aproximada o real del sitio web",
-        "description": "Una frase detallando qué hacen y por qué son candidatos perfectos, mencionando qué tareas manuales o flujos están listos para automatizar",
-        "type": "iniciacion" o "optimizacion"
-      }
-    ]
-    
-    No devuelvas ninguna explicación fuera del JSON. Devuelve únicamente el array.`;
+    const prompt = `Eres un sistema experto de cualificación comercial y prospección comercial de alto ticket para soluciones de agendamiento y automatización con IA.
+
+OBJETIVO DE LA BÚSQUEDA:
+Identificar clínicas privadas de salud, medicina estética y cirugía de alto ticket en ESPAÑA (Ubicación prioritaria: "${locationInput}").
+ALCANCE GEOGRÁFICO: PRIORIZA la provincia de Málaga (Málaga capital, Marbella, etc.), pero INCLUYE TAMBIÉN otras principales ciudades de España (Madrid, Barcelona, Valencia, Sevilla, etc.). Genera un mix donde Málaga tenga prioridad pero abarque la geografía española.
+
+PERFILES DE DECISORES A EXTRAER:
+1. Director/a Médico/a o Propietario/a (Owner / Founder / Socio Director).
+2. Director/a de Operaciones / Gerente de Clínica.
+3. Responsable de Marketing / Growth / Patient Experience.
+
+CRITERIOS DE CUALIFICACIÓN SCORING (Deben cumplir al menos 2 de 3):
+- Actividad en Marketing: Campañas activas en Meta Ads Library, Google Ads o perfil activo de Instagram.
+- Tamaño mínimo: 2 o más doctores/profesionales en el equipo o más de 1 sede física.
+- Canal de contacto directo: WhatsApp Business o formulario web visible.
+
+Devuelve estrictamente un array en formato JSON con 5 objetos que contengan exactamente estos 9 campos:
+[
+  {
+    "name": "Nombre exacto de la clínica/empresa",
+    "specialty": "Especialidad Principal (ej: Implantología y Estética Dental, Injerto Capilar FUE, etc.)",
+    "decisionMaker": "Nombre del Decisor y Cargo (ej: Dr. Nombre Apellido - Director Médico)",
+    "email": "Email directo o corporativo directo",
+    "phone": "Teléfono / WhatsApp de contacto",
+    "web": "URL de la Web o Perfil de Instagram",
+    "instagram": "Usuario de Instagram (ej: @clinica_ejemplo)",
+    "qualificationReason": "Razón detallada de cualificación (especifica qué 2 o 3 criterios de scoring cumple)",
+    "description": "Breve descripción de su volumen de pacientes y oportunidad de automatización de citas con IA",
+    "type": "iniciacion" o "optimizacion",
+    "scoringScore": "3/3" o "2/3"
+  }
+]
+
+No devuelvas ninguna explicación fuera del JSON. Devuelve únicamente el array.`;
 
     try {
         const results = await callGemini(prompt);
@@ -248,11 +373,11 @@ async function searchLeads() {
         resultsContainer.innerHTML = `
             <div class="empty-state">
                 <div class="empty-state-icon" style="color: var(--color-danger)">⚠️</div>
-                <div class="empty-state-text">Ocurrió un error al buscar leads:</div>
+                <div class="empty-state-text">Ocurrió un error al buscar y cualificar leads:</div>
                 <div style="font-family: monospace; font-size: 12px; color: var(--color-danger); margin-top: 8px; background: rgba(239, 68, 68, 0.1); padding: 8px; border-radius: 4px; max-width: 500px; margin-left: auto; margin-right: auto; word-break: break-all;">
                     ${e.message}
                 </div>
-                <div class="empty-state-text" style="margin-top: 12px; font-size: 12.5px;">Verifica tu clave en Ajustes o inténtalo de nuevo en unos momentos.</div>
+                <div class="empty-state-text" style="margin-top: 12px; font-size: 12.5px;">Verifica tu clave en Ajustes o haz clic en las plantillas rápidas de Málaga para cargar los prospectos pre-cualificados.</div>
             </div>
         `;
     } finally {
@@ -268,7 +393,7 @@ function renderSearchResults(results) {
         resultsContainer.innerHTML = `
             <div class="empty-state">
                 <div class="empty-state-icon">🔍</div>
-                <div class="empty-state-text">No se encontraron leads. Intenta cambiar los términos de búsqueda.</div>
+                <div class="empty-state-text">No se encontraron leads. Intenta seleccionar una de las plantillas rápidas arriba.</div>
             </div>
         `;
         return;
@@ -283,24 +408,61 @@ function renderSearchResults(results) {
             ? `<span class="lead-badge iniciacion">🏷️ Iniciación</span>`
             : `<span class="lead-badge optimizacion">⚡ Optimización</span>`;
 
+        const scoreBadge = lead.scoringScore 
+            ? `<span class="lead-badge" style="background: rgba(16, 185, 129, 0.15); color: var(--color-success); border: 1px solid rgba(16, 185, 129, 0.3);">⭐ Score: ${lead.scoringScore}</span>`
+            : `<span class="lead-badge" style="background: rgba(16, 185, 129, 0.15); color: var(--color-success);">⭐ Score: 3/3</span>`;
+
+        const specialtyText = lead.specialty || "Salud y Estética";
+        const decisionMakerText = lead.decisionMaker || "Director/a Médico/a o Gerente";
+        const emailText = lead.email || "Contacto corporativo directo";
+        const phoneText = lead.phone || "WhatsApp Business activo";
+        const qualificationReason = lead.qualificationReason || lead.description;
+
         card.innerHTML = `
             <div>
                 <div class="lead-header">
-                    <h3 class="lead-title">${lead.name}</h3>
-                    ${typeBadge}
+                    <div>
+                        <h3 class="lead-title">${lead.name}</h3>
+                        <div style="font-size: 12px; color: var(--color-info); font-weight: 600; margin-top: 2px;">
+                            🏥 ${specialtyText}
+                        </div>
+                    </div>
+                    <div style="display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end;">
+                        ${scoreBadge}
+                        ${typeBadge}
+                    </div>
                 </div>
-                <p class="lead-desc">${lead.description}</p>
+                
+                <div style="background: rgba(255,255,255,0.03); border-radius: var(--radius-sm); padding: 10px; margin: 10px 0; border: 1px solid var(--border-card);">
+                    <div style="font-size: 12.5px; margin-bottom: 4px;">
+                        <strong style="color: var(--text-main);">👤 Decisor clave:</strong> ${decisionMakerText}
+                    </div>
+                    <div style="font-size: 12px; color: var(--text-muted); display: flex; gap: 12px; flex-wrap: wrap;">
+                        <span>✉️ ${emailText}</span>
+                        <span>📱 ${phoneText}</span>
+                    </div>
+                </div>
+
+                <div style="font-size: 12px; color: var(--color-warning); background: rgba(245, 158, 11, 0.08); padding: 8px 10px; border-radius: var(--radius-sm); border-left: 3px solid var(--color-warning); margin-bottom: 12px;">
+                    <strong>💡 Razón de Cualificación:</strong> ${qualificationReason}
+                </div>
+
                 <div class="lead-meta">
                     <i data-lucide="globe" style="width:14px;height:14px;"></i>
-                    <a href="${lead.web.startsWith('http') ? lead.web : 'https://' + lead.web}" target="_blank">${lead.web}</a>
+                    <a href="${lead.web && lead.web.startsWith('http') ? lead.web : 'https://' + (lead.web || '#')}" target="_blank">${lead.web || 'Ver Sitio Web'}</a>
+                    ${lead.instagram ? `
+                        <span style="color:var(--text-muted); margin: 0 4px;">|</span>
+                        <i data-lucide="instagram" style="width:14px;height:14px;"></i>
+                        <a href="https://instagram.com/${lead.instagram.replace('@','')}" target="_blank">${lead.instagram}</a>
+                    ` : ''}
                     <span style="color:var(--text-muted); margin: 0 4px;">|</span>
                     <i data-lucide="search" style="width:12px;height:12px;"></i>
                     <a href="https://www.google.com/search?q=${encodeURIComponent(lead.name + ' ' + (document.getElementById('searchLocation').value.trim() || 'Málaga'))}" target="_blank" style="font-size:11px;">Buscar en Google</a>
                 </div>
             </div>
-            <div class="lead-actions">
+            <div class="lead-actions" style="margin-top: 14px;">
                 <button class="action-btn" style="flex-grow:1; padding: 10px 14px; font-size:13px;" onclick="selectLeadForAnalysis(${index})">
-                    <i data-lucide="sparkles" style="width:14px;height:14px;"></i> Generar Propuesta
+                    <i data-lucide="sparkles" style="width:14px;height:14px;"></i> Generar Propuesta de IA
                 </button>
             </div>
         `;
@@ -355,26 +517,34 @@ function selectLeadForAnalysis(index) {
 
 async function generateProposalAI() {
     const lead = state.activeLead;
-    const prompt = `Eres un desarrollador freelance gallego experto en automatizaciones de procesos comerciales mediante IA, APIs (YouTube, CRM, Google Sheets, WhatsApp, Gmail, etc.) y programación de integraciones web.
+    const prompt = `Eres un consultor e ingeniero de software especializado en optimización de la Experiencia del Paciente (Patient Experience), sistemas conversacionales de IA y automatización para clínicas médicas y de estética de alto ticket.
     
-    Vas a crear una propuesta de negocio inicial para el siguiente cliente potencial:
-    - Nombre de la empresa: ${lead.name}
-    - Sitio web: ${lead.web}
-    - Descripción del cliente y su necesidad: ${lead.description}
-    - Tipo de cliente: ${lead.type === 'iniciacion' ? 'Empresa tradicional que hace tareas muy manuales y carece de automatización' : 'Empresa digitalizada que puede optimizar y conectar sus flujos'}
+    Vas a redactar un diagnóstico técnico y un mensaje con ENFOQUE CONSULTIVO (Asesor de confianza, sin venta agresiva ni tono impersonal) para la siguiente clínica:
+    - Nombre de la clínica: ${lead.name}
+    - Especialidad: ${lead.specialty || 'Salud y Estética'}
+    - Decisor / Cargo objetivo: ${lead.decisionMaker || 'Director/a Médico/a o Propietario/a'}
+    - Sitio web / Redes: ${lead.web} ${lead.instagram || ''}
+    - Razón de cualificación: ${lead.qualificationReason || lead.description}
 
     Genera exactamente dos bloques de información:
-    1. Un array de 3 ideas concretas de automatización técnica para esta empresa. Cada idea debe incluir:
-       - "title": Título corto y vendedor de la automatización.
-       - "problem": El problema o proceso ineficiente que hace perder tiempo.
-       - "solution": Qué software, scripts, APIs o IA programarás para resolverlo.
-       - "benefit": Cuál es el beneficio financiero o ahorro de tiempo directo (sé concreto).
+    1. Un array de 3 propuestas de optimización consultiva para esta clínica:
+       - Propuesta 1: Asistente conversacional IA en WhatsApp para agendamiento 24/7 sin fricción.
+       - Propuesta 2: Triaje y pre-cualificación inteligente de pacientes previa a la primera consulta.
+       - Propuesta 3: Secuencia automatizada de acompañamiento y seguimiento de presupuestos.
+       Cada idea debe incluir:
+       - "title": Título consultivo y profesional.
+       - "problem": El área de mejora detectada en la experiencia del paciente (ej: falta de respuesta inmediata fuera de horario de recepción).
+       - "solution": La optimización tecnológica recomendada.
+       - "benefit": Impacto positivo directo en satisfacción del paciente y conversión de citas.
        
-    2. Un correo electrónico inicial frío ("cold email") redactado en Castellano, diseñado para el responsable de la empresa.
-       - Tono: Profesional, directo, sin rodeos corporativos aburridos, de programador a programador/dueño.
-       - Enfoque: Propón solucionar uno de los problemas identificados. Ofrece una breve charla informal de 10 minutos (teléfono o videollamada) donde les propones enseñarle cómo podría ahorrar tiempo de inmediato.
-       - Personalización: Haz referencia directa a la actividad de su empresa.
-       - Usa placeholders legibles para que yo firme al final, como "[Tu Nombre]".
+    2. Un MENSAJE DE CONTACTO CON ENFOQUE CONSULTIVO (Auditoría Gratuita de Valor) dirigido al decisor (${lead.decisionMaker || 'Director/a Médico/a'}):
+       - Tono: Muy humano, respetuoso, empático, altamente profesional y cero agresivo.
+       - Estructura:
+         a) Saludo personalizado citando el nombre del decisor y de la clínica.
+         b) Observación positiva sobre la reputación o especialidad de su clínica.
+         c) Hallazgo consultivo útil: Menciona que al analizar su canal de WhatsApp/formulario, has detectado una oportunidad de mejora en la atención de pacientes fuera de horario comercial (noches y fines de semana).
+         d) Oferta de valor sin compromiso: Ofréceles compartir un breve video-demo de 2 minutos o una breve charla consultiva de 5 minutos sobre cómo resolver esa fricción en su agendamiento.
+         e) Despedida cordial con el placeholder "[Tu Nombre]".
 
     Devuelve estrictamente un objeto JSON con esta estructura exacta:
     {
@@ -388,7 +558,7 @@ async function generateProposalAI() {
         { ... },
         { ... }
       ],
-      "email": "Borrador completo del correo..."
+      "email": "Texto del mensaje consultivo..."
     }
 
     No añadas ningún texto antes ni después del JSON.`;
@@ -526,18 +696,29 @@ function renderCRM() {
             `;
         }
 
+        const specialtyTag = lead.specialty ? `<div style="font-size:11px; color:var(--color-info); font-weight:600; margin-bottom:4px;">🏥 ${lead.specialty}</div>` : '';
+        const decisionMakerTag = lead.decisionMaker ? `<div style="font-size:11px; color:var(--text-main); margin-bottom:4px;">👤 <strong>Decisor:</strong> ${lead.decisionMaker}</div>` : '';
+        const contactTag = (lead.email || lead.phone) ? `<div style="font-size:11px; color:var(--text-muted); margin-bottom:6px;">📱 ${lead.phone || ''} | ✉️ ${lead.email || ''}</div>` : '';
+        const scoreBadge = lead.scoringScore ? `<span style="font-size:10px; background:rgba(16,185,129,0.2); color:var(--color-success); padding:2px 6px; border-radius:4px; font-weight:600;">⭐ ${lead.scoringScore}</span>` : '';
+
         card.innerHTML = `
-            <div style="display:flex; justify-content:space-between; align-items:start; margin-bottom: 6px;">
+            <div style="display:flex; justify-content:space-between; align-items:start; margin-bottom: 4px;">
                 <div class="kanban-card-title">${lead.name}</div>
-                <span title="${lead.type === 'iniciacion' ? 'Iniciación' : 'Optimización'}">${typeIcon}</span>
+                <div style="display:flex; gap:4px;">
+                    ${scoreBadge}
+                    <span title="${lead.type === 'iniciacion' ? 'Iniciación' : 'Optimización'}">${typeIcon}</span>
+                </div>
             </div>
-            <p class="kanban-card-desc">${lead.description.substring(0, 80)}...</p>
-            <div class="kanban-card-actions">
+            ${specialtyTag}
+            ${decisionMakerTag}
+            ${contactTag}
+            <p class="kanban-card-desc" style="font-size:11.5px; line-height:1.4; color:var(--text-muted);">${(lead.qualificationReason || lead.description).substring(0, 95)}...</p>
+            <div class="kanban-card-actions" style="margin-top:8px;">
                 <button class="card-move-btn" style="color:var(--color-danger);" onclick="deleteLead('${lead.id}')">
                     <i data-lucide="trash-2" style="width:12px;height:12px;"></i>
                 </button>
                 <button class="card-move-btn" style="color:var(--color-info);" onclick="viewSavedLeadProposal('${lead.id}')">
-                    Ver email
+                    Ver propuesta
                 </button>
                 ${actionBtn}
             </div>
