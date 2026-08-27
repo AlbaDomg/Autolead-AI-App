@@ -849,20 +849,20 @@ function updateDashboardStats() {
 const defaultMicrotasks = [
     {
         id: 'search_niche',
-        text: 'Buscar 5 minutos clientes del nicho de "clínicas dentales" en tu zona.',
-        description: 'Vete a la sección "Buscar Leads", escribe "Clínicas dentales" en tu ciudad y pulsa Buscar. Analizaremos qué empresas tradicionales operan en papel o métodos antiguos.',
-        action: () => switchView('search')
+        text: '🏥 Buscar clínicas de salud y medicina estética de alto ticket (2 min)',
+        description: 'Vete a la sección "Buscar Leads" para cualificar clínicas dentales, medicina estética o cirugía en España (priorizando Málaga). Extraeremos decisores y canales directos.',
+        action: () => applyPreset('Clínicas de Salud y Estética (Alto Ticket)', 'España (Priorizando Málaga)')
     },
     {
-        id: 'read_inspiration',
-        text: 'Buscar ideas inspiradoras de automatización en YouTube o Google.',
-        description: 'Tómate exactamente 3 minutos para ver qué automatizaciones está haciendo la gente con Make.com, n8n o Python en canales especializados. Anota 1 idea rápida.',
-        action: () => window.open('https://www.youtube.com/results?search_query=automatizaciones+con+ia+para+negocios', '_blank')
+        id: 'search_capilar',
+        text: '💇‍♂️ Buscar clínicas de injerto y salud capilar FUE (2 min)',
+        description: 'Las clínicas capilares invierten activamente en publicidad pero pierden solicitudes fuera de horario. Vamos a buscar prospectos ideales para agendamiento con IA.',
+        action: () => applyPreset('Clínicas de Injerto y Salud Capilar FUE', 'España (Priorizando Málaga)')
     },
     {
         id: 'configure_api',
-        text: 'Revisar o configurar tu API Key de Gemini en Ajustes.',
-        description: 'Si aún no tienes conectada la IA, ve a Ajustes, haz clic en el enlace para generar una clave de desarrollo gratuita y pégala aquí. ¡Es un solo paso!',
+        text: '🔑 Revisar o configurar tu API Key de Gemini en Ajustes.',
+        description: 'Si aún no tienes conectada la IA, ve a Ajustes y pega tu clave de desarrollo. ¡Es un solo paso!',
         action: () => switchView('settings')
     }
 ];
@@ -888,28 +888,12 @@ function setupADHDCoach() {
             description: 'Vete a Ajustes y pega tu clave para poder usar la búsqueda por IA.',
             action: () => switchView('settings')
         };
-        opt2 = defaultMicrotasks[1]; // Buscar inspiración
+        opt2 = defaultMicrotasks[0]; // Buscar clínicas
     } 
     else if (state.leads.length === 0) {
         // No hay leads en el CRM
-        opt1 = {
-            id: 'search_audiovisual',
-            text: '🎥 Buscar empresas del sector audiovisual/productoras (2 min)',
-            description: 'Ve al buscador de Leads y escribe "Productoras de video" en tu región. La IA te dirá empresas locales que necesitan automatización de video.',
-            action: () => {
-                switchView('search');
-                document.getElementById('searchNiche').value = 'Productoras de video';
-            }
-        };
-        opt2 = {
-            id: 'search_inmobiliarias',
-            text: '🏠 Buscar empresas del sector inmobiliario en Málaga (2 min)',
-            description: 'Las inmobiliarias manejan docenas de emails manuales y fotos diariamente. Vamos a buscar algunas para automatizar sus tareas.',
-            action: () => {
-                switchView('search');
-                document.getElementById('searchNiche').value = 'Inmobiliarias';
-            }
-        };
+        opt1 = defaultMicrotasks[0];
+        opt2 = defaultMicrotasks[1];
     } 
     else {
         // Hay leads en el CRM
