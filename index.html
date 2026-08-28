@@ -229,12 +229,15 @@
                             <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 16px;"><i data-lucide="mail" style="color: var(--color-primary);"></i> Mensaje Consultivo (Auditoría & Valor)</h3>
                             <div class="proposal-email-box">
                                 <textarea id="proposalEmailText" class="email-textarea"></textarea>
-                                <div class="proposal-email-actions">
+                                <div class="proposal-email-actions" style="display: flex; gap: 8px; flex-wrap: wrap;">
                                     <button class="action-btn secondary-btn" onclick="copyProposalEmail()">
-                                        <i data-lucide="copy"></i> Copiar Texto
+                                        <i data-lucide="copy"></i> Copiar
+                                    </button>
+                                    <button class="action-btn secondary-btn" style="background: rgba(234, 67, 53, 0.15); color: #f87171; border: 1px solid rgba(234, 67, 53, 0.3);" onclick="openInGmail()">
+                                        <i data-lucide="mail"></i> Abrir en Gmail ↗
                                     </button>
                                     <button class="action-btn" onclick="saveToCRMAndMarkContacted()">
-                                        <i data-lucide="send"></i> Guardar y Marcar Contactado
+                                        <i data-lucide="send"></i> Guardar en CRM
                                     </button>
                                 </div>
                             </div>

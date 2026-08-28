@@ -645,6 +645,24 @@ function copyProposalEmail() {
     alert("¡Borrador de email copiado al portapapeles!");
 }
 
+function openInGmail() {
+    const lead = state.activeLead;
+    if (!lead) {
+        alert("No hay ningún prospecto activo seleccionado.");
+        return;
+    }
+
+    const emailText = document.getElementById('proposalEmailText').value.trim();
+    // Extraer formato de email válido si está acompañado de texto suplementario
+    const emailMatch = lead.email ? lead.email.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/) : null;
+    const recipient = emailMatch ? emailMatch[0] : (lead.email || '');
+    const subject = `Una consulta rápida sobre la experiencia del paciente en ${lead.name}`;
+
+    const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(recipient)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(emailText)}`;
+    
+    window.open(gmailUrl, '_blank');
+}
+
 function saveToCRMAndMarkContacted() {
     // Actualizar el correo modificado por si el usuario lo editó en el textarea
     state.activeLead.email = document.getElementById('proposalEmailText').value;
