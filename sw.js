@@ -1,4 +1,4 @@
-const CACHE_NAME = 'autolead-ai-cache-v1';
+const CACHE_NAME = 'autolead-ai-cache-v3';
 const ASSETS = [
   '/',
   '/index.html',
@@ -11,19 +11,15 @@ const ASSETS = [
   'https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js'
 ];
 
-// Instalar el Service Worker y almacenar en caché los recursos estáticos
+// Instalar el Service Worker y omitir espera
 self.addEventListener('install', event => {
+  self.skipWaiting();
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => {
-        console.log('Cacheando recursos de la App Shell...');
-        return cache.addAll(ASSETS);
-      })
-      .then(() => self.skipWaiting())
+    caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS))
   );
 });
 
-// Activar el Service Worker y limpiar cachés antiguas
+// Activar el Service Worker y eliminar TODAS las cachés antiguas
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(keys => {
@@ -39,30 +35,26 @@ self.addEventListener('activate', event => {
   );
 });
 
-// Interceptar peticiones para servir desde caché en offline o actualizar
+// Estrategia Network-First: Intenta red primero para traer la última versión de Vercel
 self.addEventListener('fetch', event => {
-  // Ignorar peticiones que no sean GET y las llamadas de la API de Gemini
   if (event.request.method !== 'GET' || event.request.url.includes('googleapis.com')) {
     return;
   }
 
   event.respondWith(
-    caches.match(event.request).then(cachedResponse => {
-      if (cachedResponse) {
-        return cachedResponse;
-      }
-      return fetch(event.request).then(response => {
-        // Guardar dinámicamente recursos de nuestro origen que falten en caché
-        if (response && response.status === 200 && response.type === 'basic') {
-          const responseToCache = response.clone();
+    fetch(event.request)
+      .then(networkResponse => {
+        if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
+          const responseToCache = networkResponse.clone();
           caches.open(CACHE_NAME).then(cache => {
             cache.put(event.request, responseToCache);
           });
         }
-        return response;
-      }).catch(err => {
-        console.error('Error al realizar fetch en Service Worker:', err);
-      });
-    })
+        return networkResponse;
+      })
+      .catch(() => {
+        // Fallback offline a la memoria caché
+        return caches.match(event.request);
+      })
   );
 });
