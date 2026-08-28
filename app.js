@@ -546,7 +546,7 @@ async function generateProposalAI() {
     const lead = state.activeLead;
     const prompt = `Eres un consultor experto en estrategia digital y Experiencia del Paciente para clínicas médicas y de estética de alto ticket.
     
-    Vas a redactar un diagnóstico técnico y un mensaje inicial CONCISO Y ALTAMENTE ATRACTIVO para la siguiente clínica:
+    Vas a redactar un diagnóstico técnico y un mensaje inicial que siga RIGUROSAMENTE la siguiente estructura y formato exactos para esta clínica:
     - Nombre de la clínica: ${lead.name}
     - Especialidad: ${lead.specialty || 'Salud y Estética'}
     - Decisor / Cargo objetivo: ${lead.decisionMaker || 'Director/a Médico/a o Propietario/a'}
@@ -558,31 +558,27 @@ async function generateProposalAI() {
        - Propuesta 1: Asistente conversacional IA en WhatsApp para agendamiento 24/7 sin fricción.
        - Propuesta 2: Triaje y pre-cualificación inteligente de pacientes previa a la primera consulta.
        - Propuesta 3: Secuencia automatizada de acompañamiento y seguimiento de presupuestos.
-       Cada idea debe incluir:
-       - "title": Título consultivo y profesional.
-       - "problem": El área de mejora detectada en la experiencia del paciente (ej: respuesta fuera de horario).
-       - "solution": La optimización tecnológica recomendada.
-       - "benefit": Impacto en conversión de citas y ahorro de tiempo.
+       Cada idea debe incluir "title", "problem", "solution" y "benefit".
        
-    2. Un MENSAJE DE CONTACTO CONCISO, INTRIGANTE Y ATRACTIVO (Máximo 80-100 palabras):
-       - REGLAS DE ORO:
-         * Formato ultramóvil: Párrafos muy cortos (1-2 frases máximo).
-         * Sin rodeos ni relleno corporativo aburrido.
-         * Gancho de curiosidad irresistible: Menciona un detalle específico de su clínica (ej. las solicitudes que entran fuera de horario comercial o fines de semana).
-         * Llamada a la acción (CTA) de fricción nula: No pidas una reunión larga; ofrece enviar un vídeo-demo de 90 segundos por WhatsApp o email.
-       - ESTRUCTURA EXACTA:
-         "Hola [Nombre/Cargo de ${lead.decisionMaker || 'Director/a'}], enhorabuena por vuestro trabajo en ${lead.name}.
+    2. Un MENSAJE DE CONTACTO adaptado al siguiente FORMATO Y PLANTILLA EXACTA (adaptando el nombre del decisor y la clínica según los datos de ${lead.name}):
 
-         Revisando vuestra captación digital noté un detalle clave: vuestros anuncios y redes mueven mucho interés las 24h, pero las solicitudes que entran fuera del horario de recepción se quedan sin agendar hasta el lunes.
+"Asunto: Una consulta sobre la captación por WhatsApp en ${lead.name}
 
-         Hemos diseñado un asistente con IA en WhatsApp que pre-cualifica al paciente y le agenda la cita en 45 segundos, incluso a las 11 de la noche.
+Hola ${lead.decisionMaker ? lead.decisionMaker.split(' ')[0] + ' ' + (lead.decisionMaker.split(' ')[1] || '') : 'Dr.'},
 
-         ¿Te parece si te envío un vídeo-demo de 90 segundos para que veas cómo funcionaría en ${lead.name}?
+Revisando vuestra captación, noté un detalle: vuestros anuncios generan mucho interés 24/7, pero las solicitudes que entran fuera de horario se quedan sin agendar hasta el día siguiente.
 
-         Un saludo,
-         [Tu Nombre]"
+Hemos diseñado un asistente de IA para WhatsApp que cualifica al paciente (zona a tratar, dudas previas) y agenda la valoración directamente en vuestro calendario en 45 segundos, incluso de noche.
 
-    Devuelve strictly un objeto JSON con esta estructura exacta:
+¿Tiene inconveniente en que le envíe un vídeo de 90 segundos mostrando cómo funcionaría con un caso real de su clínica?
+
+Un saludo,
+
+[Tu Nombre Real]
+
+Fundador, [Nombre de tu Agencia]"
+
+    Devuelve estrictamente un objeto JSON con esta estructura exacta:
     {
       "proposals": [
         {
@@ -594,7 +590,7 @@ async function generateProposalAI() {
         { ... },
         { ... }
       ],
-      "email": "Texto conciso del mensaje..."
+      "email": "Texto completo del mensaje siguiendo exactamente la plantilla requerida..."
     }
 
     No añadas ningún texto antes ni después del JSON.`;
@@ -652,11 +648,19 @@ function openInGmail() {
         return;
     }
 
-    const emailText = document.getElementById('proposalEmailText').value.trim();
-    // Extraer formato de email válido si está acompañado de texto suplementario
+    let emailText = document.getElementById('proposalEmailText').value.trim();
+    let subject = `Una consulta sobre la captación por WhatsApp en ${lead.name}`;
+
+    // Extraer automáticamente el asunto si el texto empieza por "Asunto:"
+    if (emailText.startsWith("Asunto:")) {
+        const lines = emailText.split("\n");
+        subject = lines[0].replace(/^Asunto:\s*/i, "").trim();
+        emailText = lines.slice(1).join("\n").trim();
+    }
+
+    // Extraer email limpio
     const emailMatch = lead.email ? lead.email.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/) : null;
     const recipient = emailMatch ? emailMatch[0] : (lead.email || '');
-    const subject = `Una consulta rápida sobre la experiencia del paciente en ${lead.name}`;
 
     const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(recipient)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(emailText)}`;
     
