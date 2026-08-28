@@ -1046,11 +1046,21 @@ let deferredPrompt;
 
 function registerServiceWorker() {
     if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register('/sw.js')
-                .then(reg => console.log('Service Worker registrado con éxito:', reg.scope))
-                .catch(err => console.error('Error al registrar el Service Worker:', err));
-        });
+        // Desregistrar cualquier Service Worker antiguo para forzar la actualización inmediata desde Vercel
+        navigator.serviceWorker.getRegistrations().then(registrations => {
+            for (let registration of registrations) {
+                registration.unregister();
+            }
+        }).catch(err => console.log('Error al limpiar service workers:', err));
+        
+        // Limpiar cachés de la memoria del navegador
+        if ('caches' in window) {
+            caches.keys().then(names => {
+                for (let name of names) {
+                    caches.delete(name);
+                }
+            });
+        }
     }
 }
 
