@@ -517,9 +517,9 @@ function selectLeadForAnalysis(index) {
 
 async function generateProposalAI() {
     const lead = state.activeLead;
-    const prompt = `Eres un consultor e ingeniero de software especializado en optimización de la Experiencia del Paciente (Patient Experience), sistemas conversacionales de IA y automatización para clínicas médicas y de estética de alto ticket.
+    const prompt = `Eres un consultor experto en estrategia digital y Experiencia del Paciente para clínicas médicas y de estética de alto ticket.
     
-    Vas a redactar un diagnóstico técnico y un mensaje con ENFOQUE CONSULTIVO (Asesor de confianza, sin venta agresiva ni tono impersonal) para la siguiente clínica:
+    Vas a redactar un diagnóstico técnico y un mensaje inicial CONCISO Y ALTAMENTE ATRACTIVO para la siguiente clínica:
     - Nombre de la clínica: ${lead.name}
     - Especialidad: ${lead.specialty || 'Salud y Estética'}
     - Decisor / Cargo objetivo: ${lead.decisionMaker || 'Director/a Médico/a o Propietario/a'}
@@ -533,20 +533,29 @@ async function generateProposalAI() {
        - Propuesta 3: Secuencia automatizada de acompañamiento y seguimiento de presupuestos.
        Cada idea debe incluir:
        - "title": Título consultivo y profesional.
-       - "problem": El área de mejora detectada en la experiencia del paciente (ej: falta de respuesta inmediata fuera de horario de recepción).
+       - "problem": El área de mejora detectada en la experiencia del paciente (ej: respuesta fuera de horario).
        - "solution": La optimización tecnológica recomendada.
-       - "benefit": Impacto positivo directo en satisfacción del paciente y conversión de citas.
+       - "benefit": Impacto en conversión de citas y ahorro de tiempo.
        
-    2. Un MENSAJE DE CONTACTO CON ENFOQUE CONSULTIVO (Auditoría Gratuita de Valor) dirigido al decisor (${lead.decisionMaker || 'Director/a Médico/a'}):
-       - Tono: Muy humano, respetuoso, empático, altamente profesional y cero agresivo.
-       - Estructura:
-         a) Saludo personalizado citando el nombre del decisor y de la clínica.
-         b) Observación positiva sobre la reputación o especialidad de su clínica.
-         c) Hallazgo consultivo útil: Menciona que al analizar su canal de WhatsApp/formulario, has detectado una oportunidad de mejora en la atención de pacientes fuera de horario comercial (noches y fines de semana).
-         d) Oferta de valor sin compromiso: Ofréceles compartir un breve video-demo de 2 minutos o una breve charla consultiva de 5 minutos sobre cómo resolver esa fricción en su agendamiento.
-         e) Despedida cordial con el placeholder "[Tu Nombre]".
+    2. Un MENSAJE DE CONTACTO CONCISO, INTRIGANTE Y ATRACTIVO (Máximo 80-100 palabras):
+       - REGLAS DE ORO:
+         * Formato ultramóvil: Párrafos muy cortos (1-2 frases máximo).
+         * Sin rodeos ni relleno corporativo aburrido.
+         * Gancho de curiosidad irresistible: Menciona un detalle específico de su clínica (ej. las solicitudes que entran fuera de horario comercial o fines de semana).
+         * Llamada a la acción (CTA) de fricción nula: No pidas una reunión larga; ofrece enviar un vídeo-demo de 90 segundos por WhatsApp o email.
+       - ESTRUCTURA EXACTA:
+         "Hola [Nombre/Cargo de ${lead.decisionMaker || 'Director/a'}], enhorabuena por vuestro trabajo en ${lead.name}.
 
-    Devuelve estrictamente un objeto JSON con esta estructura exacta:
+         Revisando vuestra captación digital noté un detalle clave: vuestros anuncios y redes mueven mucho interés las 24h, pero las solicitudes que entran fuera del horario de recepción se quedan sin agendar hasta el lunes.
+
+         Hemos diseñado un asistente con IA en WhatsApp que pre-cualifica al paciente y le agenda la cita en 45 segundos, incluso a las 11 de la noche.
+
+         ¿Te parece si te envío un vídeo-demo de 90 segundos para que veas cómo funcionaría en ${lead.name}?
+
+         Un saludo,
+         [Tu Nombre]"
+
+    Devuelve strictly un objeto JSON con esta estructura exacta:
     {
       "proposals": [
         {
@@ -558,7 +567,7 @@ async function generateProposalAI() {
         { ... },
         { ... }
       ],
-      "email": "Texto del mensaje consultivo..."
+      "email": "Texto conciso del mensaje..."
     }
 
     No añadas ningún texto antes ni después del JSON.`;
