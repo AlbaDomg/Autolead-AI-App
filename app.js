@@ -153,7 +153,7 @@ function parseGeminiJSON(text) {
     return JSON.parse(cleanText.trim());
 }
 
-// Llamada genérica a Gemini
+// Llamada genérica a Gemini con Reintento Automático y Fallback de Modelos
 async function callGemini(promptText) {
     if (!state.apiKey) {
         alert("Configura tu API Key de Gemini en la pestaña de Ajustes primero.");
@@ -161,44 +161,71 @@ async function callGemini(promptText) {
         throw new Error("Falta la API Key de Gemini");
     }
 
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${state.apiKey}`;
+    const models = [
+        'gemini-2.5-flash',
+        'gemini-1.5-flash',
+        'gemini-2.0-flash'
+    ];
 
-    try {
-        const response = await fetch(url, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                contents: [{
-                    parts: [{
-                        text: promptText
-                    }]
-                }],
-                generationConfig: {
-                    responseMimeType: 'application/json'
+    let lastError = null;
+
+    for (const model of models) {
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${state.apiKey}`;
+
+        for (let attempt = 1; attempt <= 2; attempt++) {
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [{
+                                text: promptText
+                            }]
+                        }],
+                        generationConfig: {
+                            responseMimeType: 'application/json'
+                        }
+                    })
+                });
+
+                if (!response.ok) {
+                    const errData = await response.json().catch(() => ({}));
+                    const errMsg = errData.error?.message || `Error HTTP ${response.status}`;
+                    
+                    if (errMsg.includes('high demand') || response.status === 503 || response.status === 429) {
+                        lastError = new Error(errMsg);
+                        if (attempt === 1) {
+                            await new Promise(r => setTimeout(r, 1200));
+                            continue;
+                        }
+                    } else {
+                        throw new Error(errMsg);
+                    }
+                } else {
+                    const data = await response.json();
+                    const outputText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+                    
+                    if (!outputText) {
+                        throw new Error("Gemini no devolvió texto en su respuesta.");
+                    }
+
+                    return parseGeminiJSON(outputText);
                 }
-            })
-        });
-
-        if (!response.ok) {
-            const errData = await response.json();
-            throw new Error(errData.error?.message || 'Error en la petición de Gemini');
+            } catch (error) {
+                lastError = error;
+                if (!error.message.includes('high demand') && !error.message.includes('503') && !error.message.includes('429')) {
+                    break;
+                }
+            }
         }
-
-        const data = await response.json();
-        const outputText = data.candidates?.[0]?.content?.parts?.[0]?.text;
-        
-        if (!outputText) {
-            throw new Error("Gemini no devolvió texto en su respuesta.");
-        }
-
-        return parseGeminiJSON(outputText);
-    } catch (error) {
-        console.error("Error en la llamada a Gemini:", error);
-        alert(`Error al conectar con la IA: ${error.message}`);
-        throw error;
     }
+
+    console.error("Error en la llamada a Gemini tras reintentos:", lastError);
+    alert(`La red de servidores de Google Gemini está saturada temporalmente en este momento.\n\nSugerencia: Vuelve a pulsar en 10-15 segundos o selecciona una plantilla rápida de clínicas cualificadas.`);
+    throw lastError;
 }
 
 // ==========================================
