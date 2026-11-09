@@ -448,48 +448,54 @@ function renderSearchResults(results) {
         card.innerHTML = `
             <div>
                 <div class="lead-header">
-                    <div>
+                    <div style="min-width: 0; flex: 1;">
                         <h3 class="lead-title">${lead.name}</h3>
                         <div style="font-size: 12px; color: var(--color-info); font-weight: 600; margin-top: 2px;">
                             🏥 ${specialtyText}
                         </div>
                     </div>
-                    <div style="display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end;">
+                    <div class="lead-badges-group">
                         ${scoreBadge}
                         ${typeBadge}
                     </div>
                 </div>
                 
-                <div style="background: rgba(255,255,255,0.03); border-radius: var(--radius-sm); padding: 10px; margin: 10px 0; border: 1px solid var(--border-card);">
+                <div style="background: rgba(255,255,255,0.03); border-radius: var(--radius-sm); padding: 10px; margin: 10px 0; border: 1px solid var(--border-card); word-break: break-word;">
                     <div style="font-size: 12.5px; margin-bottom: 4px;">
                         <strong style="color: var(--text-main);">👤 Decisor clave:</strong> ${decisionMakerText}
                     </div>
-                    <div style="font-size: 12px; color: var(--text-muted); display: flex; gap: 12px; flex-wrap: wrap;">
-                        <span>✉️ ${emailText}</span>
+                    <div style="font-size: 12px; color: var(--text-muted); display: flex; gap: 8px 12px; flex-wrap: wrap;">
+                        <span style="word-break: break-all;">✉️ ${emailText}</span>
                         <span>📱 ${phoneText}</span>
                     </div>
                 </div>
 
-                <div style="font-size: 12px; color: var(--color-warning); background: rgba(245, 158, 11, 0.08); padding: 8px 10px; border-radius: var(--radius-sm); border-left: 3px solid var(--color-warning); margin-bottom: 12px;">
+                <div style="font-size: 12px; color: var(--color-warning); background: rgba(245, 158, 11, 0.08); padding: 8px 10px; border-radius: var(--radius-sm); border-left: 3px solid var(--color-warning); margin-bottom: 12px; word-break: break-word;">
                     <strong>💡 Razón de Cualificación:</strong> ${qualificationReason}
                 </div>
 
                 <div class="lead-meta">
-                    <i data-lucide="globe" style="width:14px;height:14px;"></i>
-                    <a href="${lead.web && lead.web.startsWith('http') ? lead.web : 'https://' + (lead.web || '#')}" target="_blank">${lead.web || 'Ver Sitio Web'}</a>
+                    <span class="lead-meta-item">
+                        <i data-lucide="globe" style="width:14px;height:14px;flex-shrink:0;"></i>
+                        <a href="${lead.web && lead.web.startsWith('http') ? lead.web : 'https://' + (lead.web || '#')}" target="_blank">${lead.web || 'Ver Sitio Web'}</a>
+                    </span>
                     ${lead.instagram ? `
-                        <span style="color:var(--text-muted); margin: 0 4px;">|</span>
-                        <i data-lucide="instagram" style="width:14px;height:14px;"></i>
-                        <a href="https://instagram.com/${lead.instagram.replace('@','')}" target="_blank">${lead.instagram}</a>
+                        <span class="lead-meta-sep">|</span>
+                        <span class="lead-meta-item">
+                            <i data-lucide="instagram" style="width:14px;height:14px;flex-shrink:0;"></i>
+                            <a href="https://instagram.com/${lead.instagram.replace('@','')}" target="_blank">${lead.instagram}</a>
+                        </span>
                     ` : ''}
-                    <span style="color:var(--text-muted); margin: 0 4px;">|</span>
-                    <i data-lucide="search" style="width:12px;height:12px;"></i>
-                    <a href="https://www.google.com/search?q=${encodeURIComponent(lead.name + ' ' + (document.getElementById('searchLocation').value.trim() || 'Málaga'))}" target="_blank" style="font-size:11px;">Buscar en Google</a>
+                    <span class="lead-meta-sep">|</span>
+                    <span class="lead-meta-item">
+                        <i data-lucide="search" style="width:12px;height:12px;flex-shrink:0;"></i>
+                        <a href="https://www.google.com/search?q=${encodeURIComponent(lead.name + ' ' + (document.getElementById('searchLocation').value.trim() || 'Málaga'))}" target="_blank" style="font-size:11px;">Buscar en Google</a>
+                    </span>
                 </div>
             </div>
             <div class="lead-actions" style="margin-top: 14px;">
-                <button class="action-btn" style="flex-grow:1; padding: 10px 14px; font-size:13px;" onclick="selectLeadForAnalysis(${index})">
-                    <i data-lucide="sparkles" style="width:14px;height:14px;"></i> Generar Propuesta de IA
+                <button class="action-btn" style="flex-grow:1; width: 100%; padding: 10px 14px; font-size:13px;" onclick="selectLeadForAnalysis(${index})">
+                    <i data-lucide="sparkles" style="width:14px;height:14px;flex-shrink:0;"></i> Generar Propuesta de IA
                 </button>
             </div>
         `;
@@ -754,15 +760,15 @@ function renderCRM() {
             `;
         }
 
-        const specialtyTag = lead.specialty ? `<div style="font-size:11px; color:var(--color-info); font-weight:600; margin-bottom:4px;">🏥 ${lead.specialty}</div>` : '';
-        const decisionMakerTag = lead.decisionMaker ? `<div style="font-size:11px; color:var(--text-main); margin-bottom:4px;">👤 <strong>Decisor:</strong> ${lead.decisionMaker}</div>` : '';
-        const contactTag = (lead.email || lead.phone) ? `<div style="font-size:11px; color:var(--text-muted); margin-bottom:6px;">📱 ${lead.phone || ''} | ✉️ ${lead.email || ''}</div>` : '';
-        const scoreBadge = lead.scoringScore ? `<span style="font-size:10px; background:rgba(16,185,129,0.2); color:var(--color-success); padding:2px 6px; border-radius:4px; font-weight:600;">⭐ ${lead.scoringScore}</span>` : '';
+        const specialtyTag = lead.specialty ? `<div style="font-size:11px; color:var(--color-info); font-weight:600; margin-bottom:4px; word-break:break-word;">🏥 ${lead.specialty}</div>` : '';
+        const decisionMakerTag = lead.decisionMaker ? `<div style="font-size:11px; color:var(--text-main); margin-bottom:4px; word-break:break-word;">👤 <strong>Decisor:</strong> ${lead.decisionMaker}</div>` : '';
+        const contactTag = (lead.email || lead.phone) ? `<div style="font-size:11px; color:var(--text-muted); margin-bottom:6px; word-break:break-word;">📱 ${lead.phone || ''} | ✉️ ${lead.email || ''}</div>` : '';
+        const scoreBadge = lead.scoringScore ? `<span style="font-size:10px; background:rgba(16,185,129,0.2); color:var(--color-success); padding:2px 6px; border-radius:4px; font-weight:600; white-space:nowrap;">⭐ ${lead.scoringScore}</span>` : '';
 
         card.innerHTML = `
-            <div style="display:flex; justify-content:space-between; align-items:start; margin-bottom: 4px;">
-                <div class="kanban-card-title">${lead.name}</div>
-                <div style="display:flex; gap:4px;">
+            <div style="display:flex; justify-content:space-between; align-items:start; gap: 8px; margin-bottom: 4px;">
+                <div class="kanban-card-title" style="min-width:0; word-break:break-word;">${lead.name}</div>
+                <div style="display:flex; gap:4px; flex-shrink:0;">
                     ${scoreBadge}
                     <span title="${lead.type === 'iniciacion' ? 'Iniciación' : 'Optimización'}">${typeIcon}</span>
                 </div>
@@ -770,8 +776,8 @@ function renderCRM() {
             ${specialtyTag}
             ${decisionMakerTag}
             ${contactTag}
-            <p class="kanban-card-desc" style="font-size:11.5px; line-height:1.4; color:var(--text-muted);">${(lead.qualificationReason || lead.description).substring(0, 95)}...</p>
-            <div class="kanban-card-actions" style="margin-top:8px;">
+            <p class="kanban-card-desc" style="font-size:11.5px; line-height:1.4; color:var(--text-muted); word-break:break-word;">${(lead.qualificationReason || lead.description).substring(0, 95)}...</p>
+            <div class="kanban-card-actions" style="margin-top:8px; flex-wrap:wrap; gap:8px;">
                 <button class="card-move-btn" style="color:var(--color-danger);" onclick="deleteLead('${lead.id}')">
                     <i data-lucide="trash-2" style="width:12px;height:12px;"></i>
                 </button>
