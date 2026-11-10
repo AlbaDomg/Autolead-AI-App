@@ -448,15 +448,15 @@ function renderSearchResults(results) {
         card.innerHTML = `
             <div>
                 <div class="lead-header">
-                    <div style="min-width: 0; flex: 1;">
-                        <h3 class="lead-title">${lead.name}</h3>
-                        <div style="font-size: 12px; color: var(--color-info); font-weight: 600; margin-top: 2px;">
-                            🏥 ${specialtyText}
-                        </div>
-                    </div>
                     <div class="lead-badges-group">
                         ${scoreBadge}
                         ${typeBadge}
+                    </div>
+                    <div class="lead-title-block">
+                        <h3 class="lead-title">${lead.name}</h3>
+                        <div class="lead-specialty">
+                            🏥 ${specialtyText}
+                        </div>
                     </div>
                 </div>
                 
