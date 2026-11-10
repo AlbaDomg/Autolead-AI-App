@@ -262,33 +262,42 @@
                 <div class="kanban-board">
                     <!-- Columna: Para Contactar -->
                     <div class="kanban-column" id="col-todo">
-                        <div class="column-header">
+                        <div class="column-header" onclick="toggleCRMColumn('col-todo')">
                             <span class="column-title"><i data-lucide="user-plus" style="color: var(--color-warning);"></i> Por Contactar</span>
-                            <span class="column-count" id="count-todo">0</span>
+                            <div class="column-header-right">
+                                <span class="column-count" id="count-todo">0</span>
+                                <i data-lucide="chevron-down" class="column-chevron"></i>
+                            </div>
                         </div>
-                        <div class="kanban-cards-container" id="cards-todo" style="display:flex; flex-direction:column; gap:12px;">
+                        <div class="kanban-cards-container" id="cards-todo">
                             <!-- Tarjetas aquí -->
                         </div>
                     </div>
 
                     <!-- Columna: Contactados -->
                     <div class="kanban-column" id="col-contacted">
-                        <div class="column-header">
+                        <div class="column-header" onclick="toggleCRMColumn('col-contacted')">
                             <span class="column-title"><i data-lucide="mail-check" style="color: var(--color-primary);"></i> Contactado</span>
-                            <span class="column-count" id="count-contacted">0</span>
+                            <div class="column-header-right">
+                                <span class="column-count" id="count-contacted">0</span>
+                                <i data-lucide="chevron-down" class="column-chevron"></i>
+                            </div>
                         </div>
-                        <div class="kanban-cards-container" id="cards-contacted" style="display:flex; flex-direction:column; gap:12px;">
+                        <div class="kanban-cards-container" id="cards-contacted">
                             <!-- Tarjetas aquí -->
                         </div>
                     </div>
 
                     <!-- Columna: Interesados -->
                     <div class="kanban-column" id="col-interested">
-                        <div class="column-header">
+                        <div class="column-header" onclick="toggleCRMColumn('col-interested')">
                             <span class="column-title"><i data-lucide="message-square" style="color: var(--color-success);"></i> Interesados / Citas</span>
-                            <span class="column-count" id="count-interested">0</span>
+                            <div class="column-header-right">
+                                <span class="column-count" id="count-interested">0</span>
+                                <i data-lucide="chevron-down" class="column-chevron"></i>
+                            </div>
                         </div>
-                        <div class="kanban-cards-container" id="cards-interested" style="display:flex; flex-direction:column; gap:12px;">
+                        <div class="kanban-cards-container" id="cards-interested">
                             <!-- Tarjetas aquí -->
                         </div>
                     </div>

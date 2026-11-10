@@ -718,6 +718,13 @@ function clearCRMData() {
     }
 }
 
+function toggleCRMColumn(colId) {
+    const col = document.getElementById(colId);
+    if (col) {
+        col.classList.toggle('collapsed');
+    }
+}
+
 function renderCRM() {
     const todoContainer = document.getElementById('cards-todo');
     const contactedContainer = document.getElementById('cards-contacted');
